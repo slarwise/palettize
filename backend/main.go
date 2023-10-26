@@ -11,7 +11,7 @@ import (
 	"go.opentelemetry.io/otel"
 
 	"go.opentelemetry.io/otel/attribute"
-	stdout "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
@@ -21,7 +21,8 @@ var db = make(map[string]string)
 var tracer = otel.Tracer("backend")
 
 func main() {
-	tp, err := initTracer()
+	ctx := context.Background()
+	tp, err := initTracer(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -73,12 +74,11 @@ func main() {
 		}
 	})
 
-	// Listen and Server in 0.0.0.0:8080
 	r.Run(":8080")
 }
 
-func initTracer() (*sdktrace.TracerProvider, error) {
-	exporter, err := stdout.New(stdout.WithPrettyPrint())
+func initTracer(ctx context.Context) (*sdktrace.TracerProvider, error) {
+	exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
