@@ -74,11 +74,11 @@ func main() {
 		}
 	})
 
-	r.Run(":8080")
+	r.Run(":3001")
 }
 
 func initTracer(ctx context.Context) (*sdktrace.TracerProvider, error) {
-	exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithInsecure())
+	exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithInsecure(), otlptracehttp.WithEndpoint("tempo:4318"))
 	if err != nil {
 		return nil, err
 	}
