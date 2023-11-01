@@ -35,5 +35,5 @@ k8s_resource('promtail-daemonset', port_forwards=9080)
 k8s_yaml('k8s/loki.yaml')
 k8s_resource('loki', port_forwards=3100)
 
-# k8s_yaml('k8s/jaeger.yaml')
-# k8s_resource('jaeger', port_forwards='16686:16686')
+k8s_yaml('k8s/grafana.yaml')
+k8s_resource('grafana', port_forwards=3000)
