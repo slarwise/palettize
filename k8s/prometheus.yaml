@@ -14,12 +14,28 @@ spec:
     spec:
       containers:
         - name: prometheus
-          image: prometheus
+          image: prom/prometheus:latest
           args:
             - --web.enable-remote-write-receiver
           ports:
             - name: http
               containerPort: 9090
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /prometheus
+      volumes:
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 5s
 ---
 apiVersion: v1
 kind: Service
