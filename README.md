@@ -21,7 +21,7 @@ Use grafana's LGTM stack:
 Start a local cluster, with a local image registry. Examples:
 
 - Docker Desktop: Enable kubernetes
-- k3d: `cluster create my-cluster --registry-create my-registry`
+- k3d: `k3d create my-cluster --registry-create my-registry`
 
 Start all services by running `tilt up`. Make some requests to the backend to
 see what happens:
