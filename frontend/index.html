@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+  <h1>Palettize</h1>
+
+  <p>Hi! Choose the file you want to convert and the colorscheme that you want to convert it to.</p>
+  <form enctype="multipart/form-data" action="http://localhost:3001/upload" method="post">
+    <label for="img">Select image:</label>
+    <input type="file" id="img" name="img" accept="image/*">
+    <input list="colorschemes" name="colorscheme">
+    <datalist id="colorschemes">
+      <option value="Sonokai">
+    </datalist>
+    <input type="submit">
+  </form>
+</body>
+
+</html>

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os/exec"
 
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
@@ -72,6 +73,34 @@ func main() {
 		} else {
 			c.AbortWithStatus(http.StatusNotFound)
 		}
+	})
+
+	r.POST("/upload", func(c *gin.Context) {
+		colorscheme := c.PostForm("colorscheme")
+		fmt.Println("The colorscheme is", colorscheme)
+
+		file, err := c.FormFile("img")
+		if err != nil {
+			fmt.Println(err)
+			c.AbortWithStatus(400)
+			return
+		}
+		inputPath := "./input.png"
+		if err := c.SaveUploadedFile(file, inputPath); err != nil {
+			c.AbortWithStatus(500)
+			return
+		}
+		magickCmd, err := exec.LookPath("convert")
+		if err != nil {
+			fmt.Println(err)
+			c.AbortWithStatus(500)
+		}
+		cmd := exec.Command(magickCmd, inputPath, "+dither", "-remap", "palette.png", "output.png")
+		if err = cmd.Run(); err != nil {
+			fmt.Println(err)
+			c.AbortWithStatus(500)
+		}
+		c.File("output.png")
 	})
 
 	r.Run(":3001")
