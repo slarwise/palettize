@@ -1,3 +1,9 @@
+body {
+  background-image: url('matrix.gif');
+  color: lightsalmon;
+  font-size: 150%;
+}
+
 input::file-selector-button {
   background-image: linear-gradient(to right,
       #5BCEFA,
