@@ -2,6 +2,8 @@
 
 Fit an image to a colorscheme.
 
+![Example](https://github.com/slarwise/palettize/assets/25964718/ed3e7225-9d5d-432e-b25c-d79425865a90)
+
 ## Usage
 
 ### Web version
