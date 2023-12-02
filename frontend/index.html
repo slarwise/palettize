@@ -2,21 +2,28 @@
 <html>
 
 <head>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-  <h1>Palettize</h1>
-
-  <p>Hi! Choose the file you want to convert and the colorscheme that you want to convert it to.</p>
-  <form enctype="multipart/form-data" action="http://localhost:3001/upload" method="post">
-    <label for="img">Select image:</label>
-    <input type="file" id="img" name="img" accept="image/*">
-    <input list="colorschemes" name="colorscheme">
-    <datalist id="colorschemes">
-      <option value="Sonokai">
-    </datalist>
-    <input type="submit">
+  <h1>Palettize 🤠🤠🤠</h1>
+  <form enctype="multipart/form-data" method="post">
+    <label for="input">⬆️ Image 🖼️ to 2️⃣ convert 🔄</label>
+    <input type="file" id="input" name="input" accept="image/*" />
+    <br>
+    <label for="colorscheme"> Colorscheme 🎨 🧑‍🎨 👨‍🎨 👩‍🎨</label>
+    <select name="colorscheme" id="colorscheme">
+      <option value="sonokai">Sonokai</option>
+      <option value="tomorrow-night-eighties">Tomorrow Night Eighties</option>
+    </select>
   </form>
+
+  <hr>
+
+  <img src="not-found.png" alt="Please select an image" id="inputPreview" width="400">
+  <img src="not-found.png" alt="" id="outputPreview" width="400">
+
+  <script src="index.js"></script>
 </body>
 
 </html>

@@ -4,21 +4,19 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel"
 
-	"go.opentelemetry.io/otel/attribute"
+	"github.com/gin-contrib/cors"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	"go.opentelemetry.io/otel/trace"
 )
 
-var db = make(map[string]string)
 var tracer = otel.Tracer("backend")
 
 func main() {
@@ -35,57 +33,16 @@ func main() {
 
 	r := gin.Default()
 	r.Use(otelgin.Middleware("backend"))
+	r.Use(cors.Default())
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.String(http.StatusOK, "pong")
-	})
-
-	r.POST("/colorschemes", func(c *gin.Context) {
-		var json struct {
-			Name  string `json:"name" binding:"required"`
-			Color string `json:"color" binding:"required"`
-		}
-		err := c.BindJSON(&json)
-		if err == nil {
-			_, span := tracer.Start(
-				c.Request.Context(),
-				"db",
-				trace.WithAttributes(attribute.String("name", json.Name), attribute.String("operation", "set")),
-			)
-			defer span.End()
-			db[json.Name] = json.Color
-		} else {
-			fmt.Println(err)
-		}
-	})
-
-	r.GET("/colorschemes/:name", func(c *gin.Context) {
-		name := c.Params.ByName("name")
-		_, span := tracer.Start(
-			c.Request.Context(),
-			"db",
-			trace.WithAttributes(attribute.String("name", name), attribute.String("operation", "get")),
-		)
-		defer span.End()
-		color, ok := db[name]
-		if ok {
-			c.JSON(http.StatusOK, gin.H{"name": name, "color": color})
-		} else {
-			c.AbortWithStatus(http.StatusNotFound)
-		}
-	})
-
-	r.POST("/upload", func(c *gin.Context) {
-		colorscheme := c.PostForm("colorscheme")
-		fmt.Println("The colorscheme is", colorscheme)
-
+	r.POST("/convert", func(c *gin.Context) {
 		file, err := c.FormFile("img")
 		if err != nil {
 			fmt.Println(err)
 			c.AbortWithStatus(400)
 			return
 		}
-		inputPath := "./input.png"
+		inputPath := "input.png"
 		if err := c.SaveUploadedFile(file, inputPath); err != nil {
 			c.AbortWithStatus(500)
 			return
@@ -94,11 +51,14 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 			c.AbortWithStatus(500)
+			return
 		}
-		cmd := exec.Command(magickCmd, inputPath, "+dither", "-remap", "palette.png", "output.png")
+		colorscheme := c.Query("colorscheme")
+		cmd := exec.Command(magickCmd, inputPath, "+dither", "-remap", filepath.Join("colorschemes", colorscheme+".png"), "output.png")
 		if err = cmd.Run(); err != nil {
 			fmt.Println(err)
 			c.AbortWithStatus(500)
+			return
 		}
 		c.File("output.png")
 	})

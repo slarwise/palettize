@@ -1,0 +1,15 @@
+input::file-selector-button {
+  background-image: linear-gradient(to right,
+      #5BCEFA,
+      #F5A9B8,
+      #FFFFFF 100%,
+      #FFFFFF 200%);
+  background-position-x: 0%;
+  background-size: 200%;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  padding: 1rem 1.25rem;
+  text-shadow: 0 1px 1px #333;
+  transition: all 0.25s;
+}
